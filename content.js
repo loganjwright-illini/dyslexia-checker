@@ -33,16 +33,22 @@ function analyzePage() {
 
 function applyHighlights() {
   injectStyles();
-  store.forEach(({ status, elements }) => {
+  store.forEach(({ status, elements }, label) => {
     if (status === 'pass' || !elements) return;
     const cls = status === 'fail' ? 'dac-fail' : 'dac-warn';
-    elements.forEach((el) => el.classList.add('dac-highlight', cls));
+    elements.forEach((el) => {
+      el.classList.add('dac-highlight', cls);
+      // append to label if element already has a violation
+      const existing = el.dataset.dacLabel;
+      el.dataset.dacLabel = existing ? `${existing}, ${label}` : label;
+    });
   });
 }
 
 function clearHighlights() {
   document.querySelectorAll('.dac-highlight').forEach((el) => {
     el.classList.remove('dac-highlight', 'dac-fail', 'dac-warn');
+    delete el.dataset.dacLabel;
   });
   const s = document.getElementById('dac-styles');
   if (s) s.remove();
@@ -53,6 +59,9 @@ function injectStyles() {
   const style = document.createElement('style');
   style.id = 'dac-styles';
   style.textContent = `
+    .dac-highlight {
+      position: relative !important;
+    }
     .dac-highlight.dac-fail {
       outline: 3px solid #d32f2f !important;
       outline-offset: 2px;
@@ -62,6 +71,29 @@ function injectStyles() {
       outline: 3px solid #f57c00 !important;
       outline-offset: 2px;
       background-color: rgba(245, 124, 0, 0.08) !important;
+    }
+    .dac-highlight::before {
+      content: attr(data-dac-label);
+      position: absolute;
+      top: -22px;
+      left: 0;
+      font-family: Arial, sans-serif !important;
+      font-size: 11px !important;
+      font-style: normal !important;
+      font-weight: bold !important;
+      text-transform: none !important;
+      white-space: nowrap;
+      padding: 2px 6px;
+      border-radius: 3px;
+      z-index: 999999;
+      pointer-events: none;
+      color: #fff !important;
+    }
+    .dac-highlight.dac-fail::before {
+      background-color: #d32f2f;
+    }
+    .dac-highlight.dac-warn::before {
+      background-color: #f57c00;
     }
   `;
   document.head.appendChild(style);
@@ -205,14 +237,45 @@ function checkTextAlign() {
 
 function checkBackgroundColor() {
   const label = 'Background Color';
-  const bg = getComputedStyle(document.body).backgroundColor;
-  const isWhite = bg === 'rgb(255, 255, 255)' || bg === 'rgba(255, 255, 255, 1)';
-  if (isWhite) {
-    save(label, 'fail', [document.body]);
-    return result(label, 'fail', 'Pure white background — cream or pastel recommended.');
+  const candidates = [
+    document.body,
+    document.querySelector('main'),
+    document.querySelector('article'),
+    document.querySelector('#content, .content, [role="main"]'),
+  ].filter(Boolean);
+
+  function parseRgb(str) {
+    const m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    return m ? [+m[1], +m[2], +m[3]] : null;
   }
-  save(label, 'pass', []);
-  return result(label, 'pass', `Background: ${bg}`);
+
+  function isNearWhite(rgb) {
+    return rgb && rgb[0] >= 240 && rgb[1] >= 240 && rgb[2] >= 240;
+  }
+
+  const failing = candidates.filter((el) => {
+    const rgb = parseRgb(getComputedStyle(el).backgroundColor);
+    return isNearWhite(rgb);
+  });
+
+  if (failing.length === 0) {
+    save(label, 'pass', []);
+    return result(label, 'pass', `Background color looks good.`);
+  }
+
+  const isPureWhite = failing.some((el) => {
+    const rgb = parseRgb(getComputedStyle(el).backgroundColor);
+    return rgb && rgb[0] === 255 && rgb[1] === 255 && rgb[2] === 255;
+  });
+
+  save(label, 'fail', failing);
+  return result(
+    label,
+    'fail',
+    isPureWhite
+      ? 'Pure white background detected — cream or pastel recommended.'
+      : 'Near-white background detected — cream or pastel recommended.'
+  );
 }
 
 function checkTextColor() {
