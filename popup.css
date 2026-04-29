@@ -40,6 +40,28 @@ h2 {
   border-bottom: 1px solid #ddd;
 }
 
-.pass   { color: #2e7d32; }
-.warn   { color: #b45309; }
-.fail   { color: #b71c1c; }
+.pass { color: #2e7d32; }
+.warn { color: #b45309; }
+.fail { color: #b71c1c; }
+
+#controls {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+#controls button {
+  flex: 1;
+  padding: 8px;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  background-color: #f0e9d6;
+  color: #333;
+}
+
+#controls button:hover {
+  background-color: #e0d5be;
+}

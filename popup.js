@@ -8,6 +8,18 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   });
 });
 
+document.getElementById('btn-highlight').addEventListener('click', () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { action: 'highlight' });
+  });
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { action: 'clearHighlights' });
+  });
+});
+
 function displayResults(results) {
   const list = document.getElementById('results-list');
   const scoreDisplay = document.getElementById('score-display');
@@ -24,6 +36,7 @@ function displayResults(results) {
 
   const score = Math.round((passed / results.length) * 100);
   scoreDisplay.textContent = `${score} / 100`;
+  document.getElementById('controls').style.display = 'flex';
 }
 
 function statusIcon(status) {
