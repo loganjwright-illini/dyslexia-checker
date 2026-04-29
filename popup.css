@@ -1,0 +1,45 @@
+/* Popup styling — follows dyslexia guidelines */
+body {
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background-color: #fdf6e3; /* cream, not pure white */
+  color: #333333;            /* dark grey, not pure black */
+  margin: 0;
+  padding: 16px;
+  width: 360px;
+  text-align: left;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+#score-display {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+#results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#results-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.pass   { color: #2e7d32; }
+.warn   { color: #b45309; }
+.fail   { color: #b71c1c; }
