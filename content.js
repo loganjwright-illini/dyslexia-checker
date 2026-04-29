@@ -175,7 +175,11 @@ function checkAllCaps() {
     if (getComputedStyle(el).textTransform === 'uppercase') return true;
     if (el.children.length > 0) return false;
     const text = el.textContent.trim();
-    return text.length > 3 && text === text.toUpperCase() && /[A-Z]{3,}/.test(text);
+    if (!text || text !== text.toUpperCase() || !/[A-Z]{2,}/.test(text)) return false;
+    const words = text.split(/\s+/).filter((w) => w.length > 0);
+    // single short word is likely an abbreviation (CSS, HTML, API, etc.)
+    if (words.length === 1 && text.length <= 5) return false;
+    return true;
   });
 
   if (failing.length === 0) {
