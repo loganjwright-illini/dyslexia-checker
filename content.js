@@ -112,16 +112,16 @@ function checkFontSize() {
   );
   const failing = els.filter((el) => {
     const size = parseFloat(getComputedStyle(el).fontSize);
-    return size > 0 && size < 24;
+    return size > 0 && size < 16;
   });
 
   if (failing.length === 0) {
     save(label, 'pass', []);
-    return result(label, 'pass', 'All text meets the 24px minimum.');
+    return result(label, 'pass', 'All text meets the 16px minimum.');
   }
 
   const smallest = Math.min(...failing.map((el) => parseFloat(getComputedStyle(el).fontSize)));
-  const status = smallest >= 18 ? 'warn' : 'fail';
+  const status = smallest >= 14 ? 'warn' : 'fail';
   save(label, status, failing);
   return result(label, status, `${failing.length} element(s) below 24px (smallest: ${smallest}px).`);
 }

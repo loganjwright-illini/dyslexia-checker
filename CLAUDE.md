@@ -15,7 +15,7 @@ WCAG requirements to address the specific needs of dyslexic users.
 
 ### Font Guidelines
 - Font Type: Should be sans-serif (Arial, Open Sans, Verdana)
-- Font Size: Minimum 18pt (24px) for body text
+- Font Size: Minimum 16px for body text
 - Font Emphasis: No italics anywhere on the page
 - Character Spacing: Should not be excessively tight or wide
 - Font Case: No all caps text anywhere including headings and navigation
@@ -81,7 +81,7 @@ Each guideline check should return:
 Overall score out of 100 based on number of checks passed
 
 ### Important Values
-- Minimum font size: 24px (18pt)
+- Minimum font size: 16px
 - Minimum line height: 1.5, recommended 2.0
 - Maximum column width: approximately 600px for body text
 - Pure white: #FFFFFF or rgb(255, 255, 255)
