@@ -44,3 +44,7 @@ A Chrome extension that analyzes any webpage against dyslexia-specific accessibi
 - The extension does not work on Chrome system pages (`chrome://`) or the Chrome Web Store
 - After installing or updating the extension, refresh the page before running a check
 - Based on guidelines from the British Dyslexia Association and accessibility research
+
+## Link to Guide
+
+https://sites.google.com/illinois.edu/webdesignfordyslexia/home
