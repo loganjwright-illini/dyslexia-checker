@@ -435,6 +435,17 @@ function checkHeadingHierarchy() {
     return result(label, 'warn', 'No headings found — clear heading structure recommended.');
   }
 
+  const issues = [];
+  const badElements = [];
+
+  const h1s = headings.filter((el) => el.tagName === 'H1');
+  if (h1s.length === 0) {
+    issues.push('No H1 found — page should have one.');
+  } else if (h1s.length > 1) {
+    issues.push(`${h1s.length} H1 elements found — page should have only one.`);
+    badElements.push(...h1s);
+  }
+
   const skipped = [];
   let prevLevel = 0;
   headings.forEach((el) => {
@@ -443,18 +454,19 @@ function checkHeadingHierarchy() {
     prevLevel = level;
   });
 
-  const h1s = headings.filter((el) => el.tagName === 'H1');
-  if (h1s.length > 1) {
-    save(label, 'warn', h1s);
-    return result(label, 'warn', `${h1s.length} H1 elements found — page should have only one.`);
+  if (skipped.length > 0) {
+    issues.push(`${skipped.length} heading(s) skip levels.`);
+    badElements.push(...skipped);
   }
 
-  if (skipped.length === 0) {
+  if (issues.length === 0) {
     save(label, 'pass', []);
     return result(label, 'pass', 'Heading hierarchy is correct.');
   }
-  save(label, 'fail', skipped);
-  return result(label, 'fail', `${skipped.length} heading(s) skip levels in the hierarchy.`);
+
+  const status = skipped.length > 0 ? 'fail' : 'warn';
+  save(label, status, badElements);
+  return result(label, status, issues.join(' '));
 }
 
 function checkContrastRatio() {
