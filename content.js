@@ -34,6 +34,7 @@ function analyzePage() {
     checkHeadingHierarchy(),
     checkHeadingFrequency(),
     checkCustomizationOptions(),
+    checkAltText(),
   ];
 }
 
@@ -634,6 +635,26 @@ function checkCustomizationOptions() {
 
   save(label, 'warn', []);
   return result(label, 'warn', 'No customization controls found — font, size, color, and spacing options recommended.');
+}
+
+function checkAltText() {
+  const label = 'Image Alt Text';
+  const imgs = [...document.querySelectorAll('img')];
+
+  if (imgs.length === 0) {
+    save(label, 'pass', []);
+    return result(label, 'pass', 'No images found.');
+  }
+
+  const failing = imgs.filter((el) => !el.getAttribute('alt') || el.getAttribute('alt').trim() === '');
+
+  if (failing.length === 0) {
+    save(label, 'pass', []);
+    return result(label, 'pass', `All ${imgs.length} image(s) have alt text.`);
+  }
+
+  save(label, 'fail', failing);
+  return result(label, 'fail', `${failing.length} of ${imgs.length} image(s) are missing alt text.`);
 }
 
 function result(label, status, message) {
