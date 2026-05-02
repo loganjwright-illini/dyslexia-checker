@@ -32,7 +32,6 @@ function analyzePage() {
     checkHyphenation(),
     checkParagraphIndentation(),
     checkHeadingHierarchy(),
-    checkHeadingFrequency(),
     checkCustomizationOptions(),
     checkAltText(),
   ];
@@ -560,63 +559,6 @@ function checkBoldEmphasis() {
 }
 
 
-function checkHeadingFrequency() {
-  const label = 'Heading Frequency';
-
-  // walk the body's children in order, accumulating word counts between headings
-  const headingTags = new Set(['H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
-  const blocks = [];
-  let wordCount = 0;
-  let elements = [];
-
-  function countWords(el) {
-    return (el.innerText || '').trim().split(/\s+/).filter(Boolean).length;
-  }
-
-  function walk(node) {
-    if (headingTags.has(node.tagName)) {
-      if (wordCount > 0) blocks.push({ wordCount, elements: [...elements] });
-      wordCount = 0;
-      elements = [];
-    } else if (node.tagName === 'P' || node.tagName === 'LI') {
-      const w = countWords(node);
-      if (w > 0) { wordCount += w; elements.push(node); }
-    } else {
-      for (const child of node.children) walk(child);
-      return;
-    }
-    for (const child of node.children) walk(child);
-  }
-
-  for (const child of document.body.children) walk(child);
-  if (wordCount > 0) blocks.push({ wordCount, elements: [...elements] });
-
-  if (blocks.length === 0) {
-    save(label, 'pass', []);
-    return result(label, 'pass', 'No large text sections found.');
-  }
-
-  const WARN_THRESHOLD = 200;
-  const FAIL_THRESHOLD = 350;
-
-  const failing = blocks.filter((b) => b.wordCount > FAIL_THRESHOLD);
-  const warning = blocks.filter((b) => b.wordCount > WARN_THRESHOLD && b.wordCount <= FAIL_THRESHOLD);
-
-  if (failing.length > 0) {
-    const worst = Math.max(...failing.map((b) => b.wordCount));
-    const els = failing.flatMap((b) => b.elements);
-    save(label, 'fail', els);
-    return result(label, 'fail', `${failing.length} section(s) exceed ${FAIL_THRESHOLD} words without a heading (longest: ${worst} words).`);
-  }
-  if (warning.length > 0) {
-    const worst = Math.max(...warning.map((b) => b.wordCount));
-    const els = warning.flatMap((b) => b.elements);
-    save(label, 'warn', els);
-    return result(label, 'warn', `${warning.length} section(s) exceed ${WARN_THRESHOLD} words without a heading (longest: ${worst} words).`);
-  }
-  save(label, 'pass', []);
-  return result(label, 'pass', 'Headings appear frequently enough.');
-}
 
 function checkCustomizationOptions() {
   const label = 'Customization Options';
