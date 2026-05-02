@@ -139,7 +139,7 @@ function checkFontSize() {
 function checkFontFamily() {
   const label = 'Font Family';
   const sansSerif = [
-    'arial', 'open sans', 'verdana', 'helvetica', 'roboto', 'sans-serif',
+    'arial', 'open sans', 'opensans', 'verdana', 'helvetica', 'roboto', 'sans-serif',
     'lato', 'nunito', 'inter', 'system-ui', '-apple-system', 'segoe ui',
   ];
   const els = [...document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, td')].filter(
@@ -152,7 +152,7 @@ function checkFontFamily() {
   }
 
   const failing = els.filter((el) => {
-    const ff = getComputedStyle(el).fontFamily.toLowerCase();
+    const ff = getComputedStyle(el).fontFamily.toLowerCase().replace(/['"]/g, '').replace(/-/g, ' ');
     return !sansSerif.some((f) => ff.includes(f));
   });
 
